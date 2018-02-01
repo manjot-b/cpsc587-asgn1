@@ -10,4 +10,4 @@ class Scene
     void addEntity(Entity entity);
     void addEntities(EntityList entities);
     void addCamera(Camera camera);
-}
+};
