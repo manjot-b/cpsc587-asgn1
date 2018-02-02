@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
-#include "CurveMesh.h"
+#include "Engine.h"
 
 using namespace std;
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
+    /*
     CurveMesh curve("rsc/roller_coaster.obj");
     for (unsigned int i = 0; i < curve.verticesCount(); i++ )
     {
@@ -13,4 +14,8 @@ int main(int argc, char* argv[])
         if ((i+1) % 3 == 0)
             cout << endl;
     }
+    */
+
+    Engine engine(argc, argv);
+    return engine.run();
 }

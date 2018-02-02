@@ -22,7 +22,7 @@ class VertexArray
         */
         VertexArray() {};
         VertexArray(const int vertexComponents[], size_t vertCompSize, const float buffer[], size_t buffSize);
-        ~VertexArray() {};
+        ~VertexArray();
         GLuint getID() const { return id; };
 
     private:

@@ -13,10 +13,10 @@
 class Shader 
 {
 	public: 
-		
+		Shader() {}
 		Shader(std::string vertexPath, std::string fragmentPath);
 		~Shader();
-		GLuint getProgramID();
+		GLuint getID() const;
 		/*
 			Compiles and links the shaders to a program.
 			The program's ID is stored in the ID memeber 
@@ -29,7 +29,9 @@ class Shader
 		void setUniform3fv(const char *uniform, const glm::vec3 &vec);
 		void setUniform4fv(const char *uniform, const glm::vec4 &vec);
 		void setUniform1f(const char *uniform, float value);
-	
+
+		void use() const;
+		void unuse() const;
 	private:
 		GLuint ID;
 		std::vector<GLuint> shaders;

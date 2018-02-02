@@ -8,6 +8,7 @@ using namespace std;
 
 CurveMesh::CurveMesh(const char *objFilePath)
 {
+    primitiveType_ = GL_LINES;
     loadFromObjFile(objFilePath);
 }
 
@@ -36,7 +37,7 @@ void CurveMesh::loadFromObjFile(const char *objFilePath)
             {
                 if (it != "v")
                 {
-                    vertices.push_back( stof(it) );
+                    vertices_.push_back( stof(it) );
                 }
             }
         }
