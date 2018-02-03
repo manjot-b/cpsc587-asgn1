@@ -8,8 +8,14 @@ using namespace std;
 
 CurveMesh::CurveMesh(const char *objFilePath)
 {
-    primitiveType_ = GL_LINES;
+    primitiveType_ = GL_TRIANGLES;
     loadFromObjFile(objFilePath);
+}
+
+CurveMesh::CurveMesh(const float* data, unsigned int size) 
+: Mesh(data, size)
+{
+
 }
 
 void CurveMesh::loadFromObjFile(const char *objFilePath)

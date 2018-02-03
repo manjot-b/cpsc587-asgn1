@@ -5,6 +5,9 @@ using namespace std;
 
 VertexArray::VertexArray(const int vertexComponents[], size_t vertCompSize, const float buffer[], size_t buffSize)
 {
+    // cout << vertexComponents[0] << endl;
+    // cout << buffer[0] << " " << buffer[1] << " " << buffSize << endl;
+
     glGenBuffers(1, &vbo); // gen buffer and store id in VBO
 	glGenVertexArrays(1, &id);
     
@@ -14,7 +17,6 @@ VertexArray::VertexArray(const int vertexComponents[], size_t vertCompSize, cons
 
     const int totalComponents = sumArray(0, vertCompSize, vertexComponents);
     const int stride = totalComponents * sizeof(float);
-
     for(unsigned int i = 0; i < vertCompSize; i++)
     {
         int components = vertexComponents[i];
@@ -33,6 +35,7 @@ VertexArray::VertexArray(const int vertexComponents[], size_t vertCompSize, cons
 
 VertexArray::~VertexArray()
 {
+    cout << "DELETEING VERTEX ARRAY" << id << endl;
     glDeleteVertexArrays(1, &id);
 	glDeleteBuffers(1, &vbo);
 }

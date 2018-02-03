@@ -1,7 +1,10 @@
 #pragma once
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+
 #include <memory>
+#include "Scene.h"
 
 class Engine
 {
@@ -21,6 +24,8 @@ class Engine
         typedef std::unique_ptr<GLFWwindow, DestroyglfwWin> GLFWwindowPtr;
         GLFWwindowPtr window_;
         bool windowInitialized_;
+        
+        Scene scene;
 
         bool initWindow();
         void initScene();

@@ -10,10 +10,10 @@ class Entity
 {
     public:
         Entity();
-        Entity(Mesh* Mesh, Shader shader, glm::mat4 modelMatrix);
+        Entity(Mesh* Mesh, Shader* shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
 
         void setModelMatrix(glm::mat4 modelMatrix);
-        void setShader(Shader shader);
+        void setShader(Shader* shader);
         void setVertexArray(VertexArray vertexArray);
         
         const Shader& getShader() const;
@@ -24,7 +24,7 @@ class Entity
 
     private:
         glm::mat4 modelMatrix_;
-        Shader shader_;
-        VertexArray vertexArray_;
         std::unique_ptr<Mesh> mesh_;
+        std::unique_ptr<Shader> shader_;
+        std::unique_ptr<VertexArray> vertexArray_;
 };

@@ -33,6 +33,7 @@ project(coaster)
 # Change what is in the quotes to change exec name
 set(EXEC "coaster")
 
+set (CMAKE_CXX_FLAGS "-Wall -g")
 file(GLOB SOURCES "src/*.cpp")
 add_executable(${EXEC} ${SOURCES})
 

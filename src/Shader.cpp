@@ -19,6 +19,7 @@ Shader::Shader(string vertexPath, string fragmentPath)
 
 Shader::~Shader()
 {
+	cout << "DELETEING SHADER" << ID<< endl;
 	for (auto const &shader : shaders)
 	{
 		glDeleteShader(shader);

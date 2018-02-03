@@ -1,8 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
 #include "Entity.h"
-#include "Shader.h"
 #include "Camera.h"
 #include <vector>
 #include <map>
@@ -10,11 +8,11 @@
 
 class Scene 
 {
-    typedef std::shared_ptr<Entity> EntityPtr;
-    typedef std::vector< EntityPtr > EntityList;
-    typedef std::map<GLuint, EntityList > EntityMap;    // key is entitie's shader id 
-
     public:
+        typedef std::shared_ptr<Entity> EntityPtr;
+        typedef std::vector< EntityPtr > EntityList;
+        typedef std::map<GLuint, EntityList > EntityMap;    // key is entitie's shader id 
+
         Scene();
         Scene(Camera camera);
 

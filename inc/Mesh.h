@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glad/glad.h>
 #include "VertexArray.h"
 #include <vector>
 
@@ -13,6 +12,13 @@ class Mesh
 
     public:
         Mesh() {};
+        Mesh(const float* data, unsigned int size)
+        {
+            for (unsigned int i = 0; i < size; i++)
+            {
+                vertices_.push_back(data[i]);
+            }    
+        }
 
         virtual void loadFromObjFile(const char* objFilepath) = 0;
         const float * getData() const { return vertices_.data(); }

@@ -5,7 +5,6 @@
 *	compiles and then links them into a program.
 */
 
-#include <glad/glad.h>
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
