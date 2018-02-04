@@ -7,13 +7,13 @@
 using namespace std;
 
 CurveMesh::CurveMesh(const char *objFilePath)
+: Mesh(GL_LINES)
 {
-    primitiveType_ = GL_TRIANGLES;
     loadFromObjFile(objFilePath);
 }
 
 CurveMesh::CurveMesh(const float* data, unsigned int size) 
-: Mesh(data, size)
+: Mesh(GL_LINES, data, size)
 {
 
 }

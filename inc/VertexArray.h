@@ -21,7 +21,7 @@ class VertexArray
                 buffSize:           The size of the buffer
         */
         VertexArray() {};
-        VertexArray(const int vertexComponents[], size_t vertCompSize, const float buffer[], size_t buffSize);
+        VertexArray(const int componentsPerAttribute[], size_t vertCompSize, const float buffer[], size_t buffSize);
         ~VertexArray();
         GLuint getID() const { return id; };
 

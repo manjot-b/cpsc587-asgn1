@@ -12,10 +12,12 @@ class Camera
         void setProjectionMatrix(float fovy, float aspect, float zNear, float zFar);
         void translate(glm::vec3 translation);
 
-        glm::mat4 getViewProjectionMatrix() const;
+        const glm::mat4& getViewMatrix() const;
+        const glm::mat4& getProjectionMatrix() const;
+        glm::mat4 getProjectionViewMatrix() const;
 
     private:
-        glm::mat4 viewMatrix;
-        glm::mat4 projectionMatrix;
+        glm::mat4 viewMatrix_;
+        glm::mat4 projectionMatrix_;
         
 };

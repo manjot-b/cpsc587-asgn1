@@ -3,9 +3,9 @@
 
 using namespace std;
 
-VertexArray::VertexArray(const int vertexComponents[], size_t vertCompSize, const float buffer[], size_t buffSize)
+VertexArray::VertexArray(const int componentsPerAttribute[], size_t vertCompSize, const float buffer[], size_t buffSize)
 {
-    // cout << vertexComponents[0] << endl;
+    // cout << componentsPerAttribute[0] << endl;
     // cout << buffer[0] << " " << buffer[1] << " " << buffSize << endl;
 
     glGenBuffers(1, &vbo); // gen buffer and store id in VBO
@@ -15,12 +15,12 @@ VertexArray::VertexArray(const int vertexComponents[], size_t vertCompSize, cons
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER,  buffSize * sizeof(float), buffer, GL_STATIC_DRAW);
 
-    const int totalComponents = sumArray(0, vertCompSize, vertexComponents);
+    const int totalComponents = sumArray(0, vertCompSize, componentsPerAttribute);
     const int stride = totalComponents * sizeof(float);
     for(unsigned int i = 0; i < vertCompSize; i++)
     {
-        int components = vertexComponents[i];
-        int offset = sumArray(0, i, vertexComponents);
+        int components = componentsPerAttribute[i];
+        int offset = sumArray(0, i, componentsPerAttribute);
 
         glVertexAttribPointer(i, components, GL_FLOAT, GL_FALSE, stride, (void*)(offset * sizeof(float)));
 	    glEnableVertexAttribArray(i);    

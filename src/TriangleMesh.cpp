@@ -1,6 +1,7 @@
 #include "TriangleMesh.h"
 
 TriangleMesh::TriangleMesh(const char* objFilePath)
+: Mesh(GL_TRIANGLES)
 {
     loadFromObjFile(objFilePath);
 }
