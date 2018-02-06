@@ -40,17 +40,18 @@ void Scene::drawScene()
         const auto& entityList = mapIt->second;
         if (entityList.size() > 0)
         {
-            // cout << "(in Scene.cpp) SHADER ID " << entityList[0]->getShader().getID() << endl;
             // draw all the entities with the same shader
-            entityList[0]->getShader().use();
+            Shader& shader = entityList[0]->getShader();
+            shader.use();
 
             for (const auto& entity : entityList)
             {
                 // cout << "TEST" << endl;
+                shader.setUniformMatrix4fv("model", entity->getModelMatrix());
                 entity->draw();
             }
 
-            entityList[0]->getShader().unuse();
+            shader.unuse();
         }
     }
 }
@@ -66,9 +67,10 @@ void Scene::addCamera(Camera camera)
         if (!entityList.empty())
         {
             Shader& shader = entityList[0]->getShader();
+            shader.use();
             shader.setUniformMatrix4fv("view", camera_.getViewMatrix());
             shader.setUniformMatrix4fv("projection", camera_.getProjectionViewMatrix());
-
+            shader.unuse();
         }
     }
 }

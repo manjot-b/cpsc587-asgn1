@@ -7,13 +7,13 @@
 using namespace std;
 
 CurveMesh::CurveMesh(const char *objFilePath)
-: Mesh(GL_LINES)
+: Mesh(GL_LINE_LOOP)
 {
     loadFromObjFile(objFilePath);
 }
 
 CurveMesh::CurveMesh(const float* data, unsigned int size) 
-: Mesh(GL_LINES, data, size)
+: Mesh(GL_LINE_LOOP, data, size)
 {
 
 }

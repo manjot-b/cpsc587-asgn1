@@ -10,6 +10,7 @@
 
 #include "Engine.h"
 #include "CurveMesh.h"
+#include "TriangleMesh.h"
 #include "Shader.h"
 #include "VertexArray.h"
 
@@ -63,22 +64,16 @@ bool Engine::initWindow()
 
 void Engine::initScene()
 {
-	CurveMesh *mesh = new CurveMesh("rsc/roller_coaster.obj");
-	// float p[] = {
-	// 			-0.5f, 0, 0.2f,
-	// 			0.5f, 0.5f, 0,
-	// 			0.5f, 0, 0,
-	// 			0, 0.5f, 0
-	// 			};
-	// CurveMesh* mesh = new CurveMesh(p, sizeof(p) / sizeof(float));
-	Shader *shader = new Shader("rsc/vertex.glsl", "rsc/fragment.glsl");
+	// TRACK
+	shared_ptr<Mesh> mesh = make_shared<CurveMesh>("rsc/roller_coaster.obj");
+	shared_ptr<Shader> shader = make_shared<Shader>("rsc/vertex.glsl", "rsc/fragment.glsl");
 	shader->link();
 
 	shared_ptr<Entity> curve = make_shared<Entity>(mesh, shader);
 	curve->pointsOn();
 
 	glm::mat4 model(1.0f);
-	const BoundingBox &box = curve->getBoundingBox();
+	BoundingBox box = curve->getBoundingBox();
 	float scale = 1 / max(box.width, max(box.height, box.depth));
 	float xTrans = -box.x - (box.width / 2);
 	float yTrans = -box.y - (box.height / 2);
@@ -89,8 +84,33 @@ void Engine::initScene()
 
 	scene.addEntity(curve);
 
+	// GROUND
+	float p[] = {
+				box.x, box.y, box.z,
+				box.x, box.y, box.z - box.depth,
+				box.x + box.width, box.y, box.z,
+
+				box.x + box.width, box.y, box.z,
+				box.x + box.width, box.y, box.z - box.depth,
+				box.x, box.y, box.z - box.depth
+				};
+	mesh = make_shared<TriangleMesh>(p, sizeof(p) / sizeof(float));
+	shared_ptr<Entity> ground = make_shared<Entity>(mesh, shader);
+	
+	box = ground->getBoundingBox();
+	scale = 1 / max(box.width, max(box.height, box.depth));
+	xTrans = -box.x - (box.width / 2);
+	yTrans = -box.y;// - (box.height / 2);
+	zTrans = -box.z + (box.depth / 2);
+	model = glm::mat4(1.0f);
+	model = glm::scale(model, glm::vec3(scale, scale, scale));
+	model = glm::translate(model, glm::vec3(xTrans, yTrans - 3, zTrans));
+	ground->setModelMatrix(model);
+
+	// scene.addEntity(ground);
+
 	glm::mat4 view = glm::lookAt(
-			glm::vec3(0.0f, 2.0f, 3.0f),	// camera position
+			glm::vec3(0.0f, -0.3f, 1.0f),	// camera position
 			glm::vec3(0, 0, 0),				// where camera is lookin
 			glm::vec3(0, 1, 0)				// up vector
             );

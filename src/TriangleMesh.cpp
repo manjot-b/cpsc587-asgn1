@@ -6,6 +6,12 @@ TriangleMesh::TriangleMesh(const char* objFilePath)
     loadFromObjFile(objFilePath);
 }
 
+TriangleMesh::TriangleMesh(const float* data, unsigned int size)
+: Mesh(GL_TRIANGLES, data, size)
+{
+
+}
+
 void TriangleMesh::loadFromObjFile(const char* objFilePath)
 {
 
