@@ -76,7 +76,7 @@ void Engine::initScene()
 	BoundingBox box = curve->getBoundingBox();
 	float scale = 1 / max(box.width, max(box.height, box.depth));
 	float xTrans = -box.x - (box.width / 2);
-	float yTrans = -box.y - (box.height / 2);
+	float yTrans = -box.y;// - (box.height / 2);
 	float zTrans = -box.z + (box.depth / 2);
 	model = glm::scale(model, glm::vec3(scale, scale, scale));
 	model = glm::translate(model, glm::vec3(xTrans, yTrans, zTrans)); 
@@ -104,14 +104,14 @@ void Engine::initScene()
 	zTrans = -box.z + (box.depth / 2);
 	model = glm::mat4(1.0f);
 	model = glm::scale(model, glm::vec3(scale, scale, scale));
-	model = glm::translate(model, glm::vec3(xTrans, yTrans - 3, zTrans));
+	model = glm::translate(model, glm::vec3(xTrans, yTrans, zTrans));
 	ground->setModelMatrix(model);
 
-	// scene.addEntity(ground);
+	scene.addEntity(ground);
 
 	glm::mat4 view = glm::lookAt(
-			glm::vec3(0.0f, -0.3f, 1.0f),	// camera position
-			glm::vec3(0, 0, 0),				// where camera is lookin
+			glm::vec3(0.0f, 0.4f, 0.8f),	// camera position
+			glm::vec3(0, 0.2f, 0),				// where camera is lookin
 			glm::vec3(0, 1, 0)				// up vector
             );
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
@@ -128,7 +128,7 @@ int Engine::run()
 	{
 		processInput();
 
-		glClearColor(0.3f, 1.0f, 0.8f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		scene.drawScene();

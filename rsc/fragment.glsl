@@ -7,6 +7,6 @@ uniform float primitive = 0.0;		// used for debugging. Will change colour of dif
 
 void main()
 {
-	fragColor = vec4(1.0, drawPoints, primitive, 1.0);	// if not point - red, if point - yellow
+	fragColor = vec4(0.5, drawPoints, primitive, 1.0);	// if not point - red, if point - yellow
 	//fragColor = vertexColor;
 }
