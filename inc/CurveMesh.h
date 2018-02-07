@@ -8,4 +8,5 @@ class CurveMesh : public Mesh
         CurveMesh(const char *objFilePath);
 
         virtual void loadFromObjFile(const char *objFilePath);
+        void smoothCurve();
 };

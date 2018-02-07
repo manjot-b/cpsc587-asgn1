@@ -49,3 +49,8 @@ void CurveMesh::loadFromObjFile(const char *objFilePath)
         }
     }
 }
+
+void CurveMesh::smoothCurve()
+{
+    
+}
