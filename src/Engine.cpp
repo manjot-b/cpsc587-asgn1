@@ -66,11 +66,13 @@ void Engine::initScene()
 {
 	// TRACK
 	shared_ptr<Mesh> mesh = make_shared<CurveMesh>("rsc/roller_coaster.obj");
+	static_cast<CurveMesh*>(mesh.get())->smooth(5);
+
 	shared_ptr<Shader> shader = make_shared<Shader>("rsc/vertex.glsl", "rsc/fragment.glsl");
 	shader->link();
 
 	shared_ptr<Entity> curve = make_shared<Entity>(mesh, shader);
-	curve->pointsOn();
+	// curve->pointsOn();
 
 	glm::mat4 model(1.0f);
 	BoundingBox box = curve->getBoundingBox();
