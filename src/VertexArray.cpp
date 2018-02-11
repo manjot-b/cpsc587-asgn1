@@ -35,7 +35,7 @@ VertexArray::VertexArray(const int componentsPerAttribute[], size_t vertCompSize
 
 VertexArray::~VertexArray()
 {
-    cout << "DELETEING VERTEX ARRAY" << id << endl;
+    // cout << "DELETEING VERTEX ARRAY" << id << endl;
     glDeleteVertexArrays(1, &id);
 	glDeleteBuffers(1, &vbo);
 }

@@ -30,5 +30,6 @@ class Engine
         bool initWindow();
         void initScene();
         void processInput();
-        
+        void update();
+        void render();        
 };

@@ -11,8 +11,11 @@ class CurveMesh : public Mesh
         virtual void loadFromObjFile(const char *objFilePath);
         void smooth(unsigned int iterations);
 
+        const std::vector<glm::vec3>& getUValues() const;
+
     private:
         std::vector<glm::vec3> uValues_;
 
-        void arcLengthParameterization();
+        float calcArcLength();
+        void arcLengthParameterization(float length);
 };

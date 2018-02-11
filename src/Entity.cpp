@@ -33,7 +33,7 @@ void Entity::draw() const
     if (drawPoints_)
     {
         shader_->setUniform1f("drawPoints", 1.0f);
-        glPointSize(10);
+        glPointSize(1);
         glDrawArrays(GL_POINTS, 0, mesh_->verticesCount());
         shader_->setUniform1f("drawPoints", 0);
     }
@@ -71,10 +71,10 @@ void Entity::calcBoundingBox()
     }
 
     //float length = max( abs(maxX - minX), max( abs(maxY - minY), abs(maxZ - minZ) ) );
-    cout << "VERTS " << mesh_->verticesCount() << endl;
-    cout << "MIN_X " << minX << " Max_X " << maxX << endl
-        << "MIN_Y " << minY << " Max_Y " << maxY << endl
-        << "MIN_Z " << minZ << " Max_Z " << maxZ << endl;
+    // cout << "VERTS " << mesh_->verticesCount() << endl;
+    // cout << "MIN_X " << minX << " Max_X " << maxX << endl
+    //     << "MIN_Y " << minY << " Max_Y " << maxY << endl
+    //     << "MIN_Z " << minZ << " Max_Z " << maxZ << endl;
     boundingBox_.x = minX;
     boundingBox_.y = minY;
     boundingBox_.z = maxZ;

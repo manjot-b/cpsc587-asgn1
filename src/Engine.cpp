@@ -66,13 +66,13 @@ void Engine::initScene()
 {
 	// TRACK
 	shared_ptr<Mesh> mesh = make_shared<CurveMesh>("rsc/roller_coaster.obj");
-	static_cast<CurveMesh*>(mesh.get())->smooth(5);
+	static_cast<CurveMesh*>(mesh.get())->smooth(10);
 
 	shared_ptr<Shader> shader = make_shared<Shader>("rsc/vertex.glsl", "rsc/fragment.glsl");
 	shader->link();
 
 	shared_ptr<Entity> curve = make_shared<Entity>(mesh, shader);
-	// curve->pointsOn();
+	curve->pointsOn();
 
 	glm::mat4 model(1.0f);
 	BoundingBox box = curve->getBoundingBox();
@@ -129,14 +129,8 @@ int Engine::run()
 	while (!glfwWindowShouldClose(window_.get()))
 	{
 		processInput();
-
-		glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		scene.drawScene();
-
-		glfwSwapBuffers(window_.get());
-		glfwPollEvents();
+		update();
+		render();
 	}
 
 	glfwTerminate();
@@ -149,4 +143,20 @@ void Engine::processInput()
 	{
 		glfwSetWindowShouldClose(window_.get(), true);
 	}
+}
+
+void Engine::update()
+{
+
+}
+
+void Engine::render()
+{
+	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	scene.drawScene();
+
+	glfwSwapBuffers(window_.get());
+	glfwPollEvents();
 }

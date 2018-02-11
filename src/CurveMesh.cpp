@@ -92,31 +92,57 @@ void CurveMesh::smooth(uint iterations)
         midVertices.clear();
         newVertices.clear();
     }
+
+    float length = calcArcLength(); 
+    arcLengthParameterization(length);
 }
 
-void CurveMesh::arcLengthParameterization()
+float CurveMesh::calcArcLength()
 {
-    uint divisions = 1000;
-    float ds = 1.0f / divisions;
-    float accumDist = 0;
+    float length = 0;
 
-    uint i = 0;
-    while (i < divisions)
+    for (uint i = 0; i < vertices_.size(); i += 3)
     {
         glm::vec3 current(vertices_[i], vertices_[i+1], vertices_[i+2]);
         uint nextIndex = (i + 3) % vertices_.size();     // wrap back around for last point
         glm::vec3 next(vertices_[nextIndex], vertices_[nextIndex + 1], vertices_[nextIndex + 2]);
     
-        float dist = glm::distance(next, current)
+        length += glm::distance(current, next);
+    }
+    return length;
+}
+
+void CurveMesh::arcLengthParameterization(float length)
+{
+    uint divisions = 10000;
+    float ds = length / divisions;
+
+    uint j = 0;
+    uValues_.push_back( glm::vec3(vertices_[j], vertices_[j+1], vertices_[j+2]) ); // push back first point
+
+    
+    
+    float accumDist = 0;
+    while (j < vertices_.size())
+    {
+        glm::vec3 current(vertices_[j], vertices_[j+1], vertices_[j+2]);
+        uint nextIndex = (j + 3) % vertices_.size();     // wrap back around for last point
+        glm::vec3 next(vertices_[nextIndex], vertices_[nextIndex + 1], vertices_[nextIndex + 2]);
+            
+        float dist = glm::distance(next, current);
+        // cout << dist << endl;
         if ( accumDist + dist < ds)
         {
             accumDist += dist;
         }
         else 
         {
-            
+            uValues_.push_back( current );
+            accumDist = 0;
         }
 
-        i++;
+        j += 3;     // skip over x,y,z to next point
     }
 }
+
+const vector<glm::vec3>& CurveMesh::getUValues() const { return uValues_; }
