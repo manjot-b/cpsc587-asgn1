@@ -143,6 +143,8 @@ void Engine::initScene()
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
     Camera camera = Camera(view, projection);
 	scene_.addCamera(camera);
+
+	TriangleMesh tr("rsc/cart.obj");
 }
 
 int Engine::run()
@@ -227,9 +229,9 @@ uint Engine::update(uint time)
 	cart_->setPosition( glm::vec3(newCartWorldPos) );
 
 
-	cout << "TIME " << time << " " << points[time].x << " " 
-		<< points[time].y << " " << points[time].z << endl
-		<< deltaS << " " << trackMesh->getDeltaS() << endl;
+	// cout << "TIME " << time << " " << points[time].x << " " 
+	// 	<< points[time].y << " " << points[time].z << endl
+	// 	<< deltaS << " " << trackMesh->getDeltaS() << endl;
 	return time;
 }
 
