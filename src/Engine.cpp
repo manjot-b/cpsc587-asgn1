@@ -66,59 +66,82 @@ void Engine::initScene()
 {
 	// TRACK
 	shared_ptr<Mesh> mesh = make_shared<CurveMesh>("rsc/roller_coaster.obj");
-	static_cast<CurveMesh*>(mesh.get())->smooth(10);
+	static_cast<CurveMesh*>(mesh.get())->smooth(7);
 
 	shared_ptr<Shader> shader = make_shared<Shader>("rsc/vertex.glsl", "rsc/fragment.glsl");
 	shader->link();
 
-	shared_ptr<Entity> curve = make_shared<Entity>(mesh, shader);
-	curve->pointsOn();
+	track_ = make_shared<Entity>(mesh, shader);
+	// track_->pointsOn();
+	track_->setColor(1, 0.8, 0);
 
 	glm::mat4 model(1.0f);
-	BoundingBox box = curve->getBoundingBox();
+	BoundingBox box = track_->getBoundingBox();
 	float scale = 1 / max(box.width, max(box.height, box.depth));
-	float xTrans = -box.x - (box.width / 2);
-	float yTrans = -box.y;// - (box.height / 2);
-	float zTrans = -box.z + (box.depth / 2);
-	model = glm::scale(model, glm::vec3(scale, scale, scale));
-	model = glm::translate(model, glm::vec3(xTrans, yTrans, zTrans)); 
-	curve->setModelMatrix(model);
+	// float xTrans = -box.x - (box.width / 2);
+	// float yTrans = -box.y;// - (box.height / 2);
+	// float zTrans = -box.z + (box.depth / 2);
+	track_->setScale(scale);
+	// track_->setTranslation(glm::vec3(xTrans, yTrans, zTrans)); 
 
-	scene.addEntity(curve);
+	scene_.addEntity(track_);
 
 	// GROUND
-	float p[] = {
-				box.x, box.y, box.z,
-				box.x, box.y, box.z - box.depth,
-				box.x + box.width, box.y, box.z,
+	float groundCoords[] = {
+		box.x, box.y, box.z,
+		box.x, box.y, box.z - box.depth,
+		box.x + box.width, box.y, box.z,
 
-				box.x + box.width, box.y, box.z,
-				box.x + box.width, box.y, box.z - box.depth,
-				box.x, box.y, box.z - box.depth
-				};
-	mesh = make_shared<TriangleMesh>(p, sizeof(p) / sizeof(float));
-	shared_ptr<Entity> ground = make_shared<Entity>(mesh, shader);
-	
-	box = ground->getBoundingBox();
+		box.x + box.width, box.y, box.z,
+		box.x + box.width, box.y, box.z - box.depth,
+		box.x, box.y, box.z - box.depth
+		};
+	mesh = make_shared<TriangleMesh>(groundCoords, sizeof(groundCoords) / sizeof(float));
+	ground_ = make_shared<Entity>(mesh, shader);
+	ground_->setColor(0.1, 0.2, 0.4);
+
+	box = ground_->getBoundingBox();
 	scale = 1 / max(box.width, max(box.height, box.depth));
-	xTrans = -box.x - (box.width / 2);
-	yTrans = -box.y;// - (box.height / 2);
-	zTrans = -box.z + (box.depth / 2);
-	model = glm::mat4(1.0f);
-	model = glm::scale(model, glm::vec3(scale, scale, scale));
-	model = glm::translate(model, glm::vec3(xTrans, yTrans, zTrans));
-	ground->setModelMatrix(model);
+	// xTrans = -box.x - (box.width / 2);
+	// yTrans = -box.y;// - (box.height / 2);
+	// zTrans = -box.z + (box.depth / 2);
+	ground_->setScale(scale);
+	// ground_->setTranslation(glm::vec3(xTrans, yTrans, zTrans)); 
 
-	scene.addEntity(ground);
+	scene_.addEntity(ground_);
+
+	// CART
+	float cartCoords[] = {
+		0, 0, -0.2f,
+		0, 1, -0.2f,
+		1, 0, -0.2f
+	};
+	mesh = make_shared<TriangleMesh>(cartCoords, sizeof(cartCoords) / sizeof(float));
+	cart_ = make_shared<Entity>(mesh, shader);
+	cart_->setColor(0.4, 0.1, 0.4);
+
+	scale = track_->getScale();
+	box = cart_->getBoundingBox();
+	// scale = 1 / (2.1f * max(box.width, max(box.height, box.depth)));
+	// xTrans = -box.x - (box.width / 2);
+	// yTrans = -box.y - (box.height / 2);
+	// zTrans = -box.z + (box.depth / 2);
+	// model = glm::mat4(1.0f);
+	cart_->setScale(scale);
+	// cart_->setTranslation(glm::vec3(xTrans, yTrans, zTrans));
+	cart_->setPosition( glm::vec3(0, 0, 0) );
+
+	scene_.addEntity(cart_);
+
 
 	glm::mat4 view = glm::lookAt(
-			glm::vec3(0.0f, 0.4f, 0.8f),	// camera position
-			glm::vec3(0, 0.2f, 0),				// where camera is lookin
+			glm::vec3(0.05f, 0.3f, 0.8f),	// camera position
+			glm::vec3(0.05f, 0.2f, 0),		// where camera is lookin
 			glm::vec3(0, 1, 0)				// up vector
             );
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
     Camera camera = Camera(view, projection);
-	scene.addCamera(camera);
+	scene_.addCamera(camera);
 }
 
 int Engine::run()
@@ -126,11 +149,13 @@ int Engine::run()
 	if (!windowInitialized_)
 		return -1;
 
+	unsigned long long time = 0;
 	while (!glfwWindowShouldClose(window_.get()))
 	{
 		processInput();
-		update();
+		update(time);
 		render();
+		time++;
 	}
 
 	glfwTerminate();
@@ -145,9 +170,21 @@ void Engine::processInput()
 	}
 }
 
-void Engine::update()
+void Engine::update(unsigned long long time)
 {
+	const CurveMesh* track = static_cast<CurveMesh*>(track_->getMesh().get());
 
+	const vector<glm::vec3>& points = track->getUValues();
+	
+	if (time >= points.size()) time %= points.size();
+	glm::vec4 trackWorldPos = glm::vec4(points[time], 1.0f);
+	trackWorldPos = track_->getModelMatrix() * trackWorldPos;
+	
+	cart_->setPosition( glm::vec3(trackWorldPos) );
+
+	// cout << time << " " << time/10000.0f << endl;
+	// cout << "TIME " << time << " " << points[time].x << " " 
+	// 	<< points[time].y << " " << points[time].z << endl;
 }
 
 void Engine::render()
@@ -155,7 +192,7 @@ void Engine::render()
 	glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	scene.drawScene();
+	scene_.drawScene();
 
 	glfwSwapBuffers(window_.get());
 	glfwPollEvents();
