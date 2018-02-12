@@ -25,10 +25,14 @@ class Engine
         GLFWwindowPtr window_;
         bool windowInitialized_;
         
-        Scene scene;
+        Scene scene_;
+        std::shared_ptr<Entity> track_;
+        std::shared_ptr<Entity> cart_;
+        std::shared_ptr<Entity> ground_;
 
         bool initWindow();
         void initScene();
         void processInput();
-        
+        uint update(uint time);
+        void render();        
 };
