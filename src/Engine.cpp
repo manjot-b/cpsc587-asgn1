@@ -180,7 +180,7 @@ uint Engine::update(uint time)
 	uint freeFallState = 194;
 	uint decelerationState = 1962;
 	float speed = 0;
-	float deltaT = 0.006;
+	float deltaT = 0.008;
 	float deltaS = 0;
 
 	const CurveMesh* trackMesh = static_cast<CurveMesh*>(track_->getMesh().get());
@@ -236,13 +236,14 @@ uint Engine::update(uint time)
 	
 	glm::vec3 tangent = calcVelocity(points, time, deltaT);
 	tangent = glm::normalize(tangent);
-	// cout << "OLD " << tangent.x << endl;
 
 	glm::vec3 binormal = glm::cross(tangent, normal);
 	binormal = glm::normalize(binormal);
+	normal = glm::cross(binormal, tangent);
+	normal = glm::normalize(normal);
 
-	tangent = glm::cross(normal, binormal);
-	tangent = glm::normalize(tangent);
+	//tangent = glm::cross(normal, binormal);
+	//tangent = glm::normalize(tangent);
 
 	glm::mat4 modelMatrix;
 	modelMatrix[0] = glm::vec4(binormal, 0);
@@ -254,8 +255,6 @@ uint Engine::update(uint time)
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
 	cart_->setModelMatrix(modelMatrix);
 	
-	// cout << "NEW " << tangent.x << endl;
-	// cout << "MAT " << glm::column(modelMatrix, 0).x << endl;
 	// cout << "TIME " << time << " " << points[time].x << " " 
 	// 	<< points[time].y << " " << points[time].z << endl
 	// 	<< deltaS << " " << trackMesh->getDeltaS() << endl;
