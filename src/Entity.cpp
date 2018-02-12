@@ -34,13 +34,13 @@ void Entity::draw() const
     shader_->setUniform4fv("uColor", color_);
     glDrawArrays(mesh_->getPrimitiveType(), 0, mesh_->verticesCount());
 
-    // if (drawPoints_)
-    // {
-    //     shader_->setUniform1f("drawPoints", 1.0f);
-    //     glPointSize(1);
-    //     glDrawArrays(GL_POINTS, 0, mesh_->verticesCount());
-    //     shader_->setUniform1f("drawPoints", 0);
-    // }
+    if (drawPoints_)
+    {
+        shader_->setUniform1f("drawPoints", 1.0f);
+        glPointSize(1);
+        glDrawArrays(GL_POINTS, 0, mesh_->verticesCount());
+        shader_->setUniform1f("drawPoints", 0);
+    }
     glBindVertexArray(0);
 }
 

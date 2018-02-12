@@ -73,7 +73,7 @@ void Engine::initScene()
 	shader->link();
 
 	track_ = make_shared<Entity>(mesh, shader);
-	// track_->pointsOn();
+	track_->pointsOn();
 	track_->setColor(1, 0.8, 0);
 
 	glm::mat4 model(1.0f);
@@ -112,23 +112,24 @@ void Engine::initScene()
 	scene_.addEntity(ground_);
 
 	// CART
-	float cartCoords[] = {
-		0, 0, -0.2f,
-		0, 1, -0.2f,
-		1, 0, -0.2f
-	};
-	mesh = make_shared<TriangleMesh>(cartCoords, sizeof(cartCoords) / sizeof(float));
+	// float cartCoords[] = {
+	// 	0, 0, -0.2f,
+	// 	0, 1, -0.2f,
+	// 	1, 0, -0.2f
+	// };
+	// mesh = make_shared<TriangleMesh>(cartCoords, sizeof(cartCoords) / sizeof(float));
+	mesh = make_shared<TriangleMesh>("rsc/cart.obj");
 	cart_ = make_shared<Entity>(mesh, shader);
 	cart_->setColor(0.4, 0.1, 0.4);
 
 	scale = track_->getScale();
-	box = cart_->getBoundingBox();
+	// box = cart_->getBoundingBox();
 	// scale = 1 / (2.1f * max(box.width, max(box.height, box.depth)));
 	// xTrans = -box.x - (box.width / 2);
 	// yTrans = -box.y - (box.height / 2);
 	// zTrans = -box.z + (box.depth / 2);
 	// model = glm::mat4(1.0f);
-	cart_->setScale(scale);
+	cart_->setScale(scale * 0.3);
 	// cart_->setTranslation(glm::vec3(xTrans, yTrans, zTrans));
 	cart_->setPosition( glm::vec3(0, 0, 0) );
 
@@ -144,7 +145,6 @@ void Engine::initScene()
     Camera camera = Camera(view, projection);
 	scene_.addCamera(camera);
 
-	TriangleMesh tr("rsc/cart.obj");
 }
 
 int Engine::run()
@@ -208,8 +208,7 @@ uint Engine::update(uint time)
 	{
 		float decelerationLength = trackMesh->getDeltaS() * (points.size() - decelerationState);
 		float remainingLength = trackMesh->getDeltaS() * (points.size() - time);
-
-		speed = 0.8 * (remainingLength / decelerationLength);
+		speed = 1.1 * (remainingLength / decelerationLength);
 	}
 	
 	deltaS = deltaT * speed;

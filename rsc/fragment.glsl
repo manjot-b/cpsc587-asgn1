@@ -9,4 +9,7 @@ void main()
 {
 	// fragColor = vec4(0.5, drawPoints, primitive, 1.0);	// if line- red, if point - green. else purple
 	fragColor = uColor;
+
+	if (drawPoints == 1.0)
+		fragColor = vec4(0, 1, 0, 1);
 }
