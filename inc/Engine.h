@@ -2,8 +2,9 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-
+#include <glm/glm.hpp>
 #include <memory>
+#include <vector>
 #include "Scene.h"
 
 class Engine
@@ -35,4 +36,7 @@ class Engine
         void processInput();
         uint update(uint time);
         void render();        
+
+        glm::vec3 calcVelocity(const std::vector<glm::vec3>& points, uint time, float deltaT);
+        glm::vec3 calcAcceleration(const std::vector<glm::vec3>& points, uint time, float deltaT);
 };

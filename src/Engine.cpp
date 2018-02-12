@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_access.hpp>
 #include <cmath>
 
 #include "Engine.h"
@@ -225,13 +226,53 @@ uint Engine::update(uint time)
 	// 							b * glm::vec4(points[time+1], 1.0f);
 
 	newCartWorldPos = track_->getModelMatrix() * newCartWorldPos;
-	cart_->setPosition( glm::vec3(newCartWorldPos) );
+	// cart_->setPosition( glm::vec3(newCartWorldPos) );
 
+	glm::vec3 centAcceleration = calcAcceleration(points, time, deltaT);
+	glm::vec3 gravity = glm::vec3(0, -9.81, 0);
+	
+	glm::vec3 normal = centAcceleration - gravity;
+	normal = glm::normalize(normal);
+	
+	glm::vec3 tangent = calcVelocity(points, time, deltaT);
+	tangent = glm::normalize(tangent);
+	// cout << "OLD " << tangent.x << endl;
 
+	glm::vec3 binormal = glm::cross(tangent, normal);
+	binormal = glm::normalize(binormal);
+
+	tangent = glm::cross(normal, binormal);
+	tangent = glm::normalize(tangent);
+
+	glm::mat4 modelMatrix;
+	modelMatrix[0] = glm::vec4(binormal, 0);
+	modelMatrix[1] = glm::vec4(normal, 0);
+	modelMatrix[2] = glm::vec4(tangent, 0);
+	modelMatrix[3] = newCartWorldPos;
+
+	float scale = cart_->getScale();
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
+	cart_->setModelMatrix(modelMatrix);
+	
+	// cout << "NEW " << tangent.x << endl;
+	// cout << "MAT " << glm::column(modelMatrix, 0).x << endl;
 	// cout << "TIME " << time << " " << points[time].x << " " 
 	// 	<< points[time].y << " " << points[time].z << endl
 	// 	<< deltaS << " " << trackMesh->getDeltaS() << endl;
 	return time;
+}
+
+glm::vec3 Engine::calcVelocity(const vector<glm::vec3>& points, uint time, float deltaT)
+{
+	if (time >= points.size()) time %= points.size();
+	return ( points[time + 1] - points[time] ) / deltaT;
+}
+
+glm::vec3 Engine::calcAcceleration(const vector<glm::vec3>& points, uint time, float deltaT)
+{
+	if (time >= points.size()) time %= points.size();
+	if (time <= 0) time = 1;
+	return ( points[time + 1] - 2.0f*points[time] + points[time - 1] ) / (deltaT * deltaT);
 }
 
 void Engine::render()
