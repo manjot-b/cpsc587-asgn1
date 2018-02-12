@@ -12,9 +12,13 @@ class CurveMesh : public Mesh
         void smooth(unsigned int iterations);
 
         const std::vector<glm::vec3>& getUValues() const;
+        float getLength() const;
+        float getDeltaS() const;
 
     private:
         std::vector<glm::vec3> uValues_;
+        float length_;
+        float deltaS_;
 
         float calcArcLength();
         void arcLengthParameterization(float length);

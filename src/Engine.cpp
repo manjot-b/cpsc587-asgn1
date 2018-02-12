@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 #include "Engine.h"
 #include "CurveMesh.h"
@@ -153,9 +154,9 @@ int Engine::run()
 	while (!glfwWindowShouldClose(window_.get()))
 	{
 		processInput();
-		update(time);
+		time = update(time);
 		render();
-		time++;
+		// time++;
 	}
 
 	glfwTerminate();
@@ -170,21 +171,66 @@ void Engine::processInput()
 	}
 }
 
-void Engine::update(unsigned long long time)
+uint Engine::update(uint time)
 {
-	const CurveMesh* track = static_cast<CurveMesh*>(track_->getMesh().get());
+	uint liftState = 0;
+	uint freeFallState = 194;
+	uint decelerationState = 1962;
+	float speed = 0;
+	float deltaT = 0.006;
+	float deltaS = 0;
 
-	const vector<glm::vec3>& points = track->getUValues();
+	const CurveMesh* trackMesh = static_cast<CurveMesh*>(track_->getMesh().get());
+	const vector<glm::vec3>& points = trackMesh->getUValues();
 	
-	if (time >= points.size()) time %= points.size();
-	glm::vec4 trackWorldPos = glm::vec4(points[time], 1.0f);
-	trackWorldPos = track_->getModelMatrix() * trackWorldPos;
+	if (time >= points.size()) 
+		time %= points.size();
 	
-	cart_->setPosition( glm::vec3(trackWorldPos) );
+	if (time >= liftState && time <= freeFallState)
+	{
+		speed = 0.4f;
+	}
+	else if (time > freeFallState && time <= decelerationState)
+	{
+		glm::vec4 maxHeightPos = glm::vec4(points[freeFallState], 1);
+		maxHeightPos = track_->getModelMatrix() * maxHeightPos;
+		float maxHeight = maxHeightPos.y;
 
-	// cout << time << " " << time/10000.0f << endl;
-	// cout << "TIME " << time << " " << points[time].x << " " 
-	// 	<< points[time].y << " " << points[time].z << endl;
+		glm::vec4 currentCartWorldPos = glm::vec4(points[time], 1.0f);
+		currentCartWorldPos = track_->getModelMatrix() * currentCartWorldPos;
+		float currentHeight = currentCartWorldPos.y;
+
+		speed = sqrt( 2 * 9.81 * (maxHeight - currentHeight));
+	}
+	else	// deceleration  
+	{
+		float decelerationLength = trackMesh->getDeltaS() * (points.size() - decelerationState);
+		float remainingLength = trackMesh->getDeltaS() * (points.size() - time);
+
+		speed = 0.8 * (remainingLength / decelerationLength);
+	}
+	
+	deltaS = deltaT * speed;
+	float remaining = deltaS / trackMesh->getDeltaS();
+	float intPart;
+	remaining = modf(remaining, &intPart);	// left with just fractional part
+	time += intPart + 1;
+
+	glm::vec4 newCartWorldPos = glm::vec4(points[time], 1.0f);
+	// float a = (1 - (remaining / trackMesh->getDeltaS()));
+	// float b = remaining / trackMesh->getDeltaS();
+
+	// glm::vec4 newCartWorldPos = a * glm::vec4(points[time], 1.0f) + 
+	// 							b * glm::vec4(points[time+1], 1.0f);
+
+	newCartWorldPos = track_->getModelMatrix() * newCartWorldPos;
+	cart_->setPosition( glm::vec3(newCartWorldPos) );
+
+
+	cout << "TIME " << time << " " << points[time].x << " " 
+		<< points[time].y << " " << points[time].z << endl
+		<< deltaS << " " << trackMesh->getDeltaS() << endl;
+	return time;
 }
 
 void Engine::render()

@@ -93,8 +93,8 @@ void CurveMesh::smooth(uint iterations)
         newVertices.clear();
     }
 
-    float length = calcArcLength(); 
-    arcLengthParameterization(length);
+    length_ = calcArcLength(); 
+    arcLengthParameterization(length_);
 }
 
 float CurveMesh::calcArcLength()
@@ -115,7 +115,7 @@ float CurveMesh::calcArcLength()
 void CurveMesh::arcLengthParameterization(float length)
 {
     uint divisions = 10000;
-    float ds = length / divisions;
+    deltaS_ = length / divisions;
 
     uint j = 0;
     uValues_.push_back( glm::vec3(vertices_[j], vertices_[j+1], vertices_[j+2]) ); // push back first point
@@ -131,7 +131,7 @@ void CurveMesh::arcLengthParameterization(float length)
             
         float dist = glm::distance(next, current);
         // cout << dist << endl;
-        if ( accumDist + dist < ds)
+        if ( accumDist + dist < deltaS_)
         {
             accumDist += dist;
         }
@@ -146,3 +146,5 @@ void CurveMesh::arcLengthParameterization(float length)
 }
 
 const vector<glm::vec3>& CurveMesh::getUValues() const { return uValues_; }
+float CurveMesh::getLength() const { return length_; }
+float CurveMesh::getDeltaS() const { return deltaS_; }

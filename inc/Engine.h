@@ -33,6 +33,6 @@ class Engine
         bool initWindow();
         void initScene();
         void processInput();
-        void update(unsigned long long time);
+        uint update(uint time);
         void render();        
 };
