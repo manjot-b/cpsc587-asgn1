@@ -5,8 +5,8 @@
 class CurveMesh : public Mesh
 {
     public:
-        CurveMesh(const float* data, unsigned int size);
-        CurveMesh(const char *objFilePath);
+        CurveMesh(const float* data, unsigned int size, GLenum primitiveType = GL_LINE_LOOP);
+        CurveMesh(const char *objFilePath, GLenum primitiveType = GL_LINE_LOOP);
 
         virtual void loadFromObjFile(const char *objFilePath);
         void smooth(unsigned int iterations);

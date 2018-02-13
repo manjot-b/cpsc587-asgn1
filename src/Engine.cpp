@@ -26,6 +26,8 @@ Engine::Engine(int argc, const char *argv[])
 		windowInitialized_ = false;
 	}
 	windowInitialized_ = true;
+	firstPerson_ = false;
+	spaceKeyHeld_ = false;
 	initScene();
 }
 
@@ -75,7 +77,7 @@ void Engine::initScene()
 	shader->link();
 
 	track_ = make_shared<Entity>(mesh, shader);
-	track_->pointsOn();
+	// track_->pointsOn();
 	track_->setColor(1, 0.8, 0);
 
 	glm::mat4 model(1.0f);
@@ -84,9 +86,10 @@ void Engine::initScene()
 	track_->setScale(scale);
 	scene_.addEntity(track_);
 
-
-	const vector<glm::vec3>& inRail = curMesh->getVertices();
+	// OUTER RAIL
+	const vector<glm::vec3>& inRail = curMesh->getUValues();
 	vector<float> outRail;
+	vector<float> boards;
 	float deltaT = 0.008;
 	for (uint i = 0; i < inRail.size(); i++)
 	{
@@ -100,17 +103,34 @@ void Engine::initScene()
 		tangent = glm::normalize(tangent);
 
 		glm::vec3 binormal = glm::cross(tangent, normal);
-		binormal = glm::normalize(binormal);
+		binormal = glm::normalize(binormal) * 0.15f;
 
 		glm::vec3 outRailPos = binormal + inRail[i];
 		for (uint j = 0; j < 3; j++)
-			outRail.push_back(outRailPos[j]);	
+			outRail.push_back(outRailPos[j]);
+
+		if (i % 20 == 0)
+		{
+			for (uint j = 0; j < 3; j++)
+				boards.push_back(inRail[i][j]);
+
+			for (uint j = 0; j < 3; j++)
+				boards.push_back(outRailPos[j]);
+		}
+		
 	}
-	mesh = make_shared<CurveMesh>(outRail.data(), outRail.size());
+	mesh = make_shared<CurveMesh>(outRail.data(), outRail.size(), GL_LINES);
 	shared_ptr<Entity> trackOuter = make_shared<Entity>(mesh, shader);
 	trackOuter->setColor(1, 0, 0);
 	trackOuter->setScale(scale);
 	scene_.addEntity(trackOuter);
+
+	// BOARDS
+	mesh = make_shared<CurveMesh>(boards.data(), boards.size());
+	shared_ptr<Entity> boardsEnt = make_shared<Entity>(mesh, shader);
+	boardsEnt->setColor(1, 0.2, 1);
+	boardsEnt->setScale(scale);
+	scene_.addEntity(boardsEnt);
 
 	// GROUND
 	float groundCoords[] = {
@@ -161,13 +181,13 @@ void Engine::initScene()
 	scene_.addEntity(cart_);
 
 
-	glm::mat4 view = glm::lookAt(
+	viewMatrix_ = glm::lookAt(
 			glm::vec3(0.05f, 0.3f, 0.8f),	// camera position
 			glm::vec3(0.05f, 0.2f, 0),		// where camera is lookin
 			glm::vec3(0, 1, 0)				// up vector
             );
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
-    Camera camera = Camera(view, projection);
+    projMatrix_ = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+    Camera camera = Camera(viewMatrix_, projMatrix_);
 	scene_.addCamera(camera);
 
 }
@@ -193,9 +213,18 @@ int Engine::run()
 void Engine::processInput()
 {
 	if (glfwGetKey(window_.get(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
 		glfwSetWindowShouldClose(window_.get(), true);
+	
+	if (glfwGetKey(window_.get(), GLFW_KEY_SPACE) == GLFW_PRESS && !spaceKeyHeld_)
+	{
+		spaceKeyHeld_ = true;
+		firstPerson_ = !firstPerson_;
 	}
+	if (glfwGetKey(window_.get(), GLFW_KEY_SPACE) == GLFW_RELEASE)
+	{
+		spaceKeyHeld_ = false;
+	}	
+	
 }
 
 uint Engine::update(uint time)
@@ -276,9 +305,25 @@ uint Engine::update(uint time)
 	modelMatrix[3] = newCartWorldPos;
 
 	float scale = cart_->getScale();
+	
+	if (firstPerson_)
+	{
+		glm::mat4 view = glm::lookAt(
+			glm::vec3(newCartWorldPos),				// camera position
+			tangent,						// where camera is lookin
+			normal							// up vector
+        );
+		scene_.addCamera( Camera(view, projMatrix_) );		
+	}
+	else
+	{
+		scene_.addCamera( Camera(viewMatrix_, projMatrix_) );
+	}
+	
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
 	cart_->setModelMatrix(modelMatrix);
 	
+
 	// cout << "TIME " << time << " " << points[time].x << " " 
 	// 	<< points[time].y << " " << points[time].z << endl
 	// 	<< deltaS << " " << trackMesh->getDeltaS() << endl;

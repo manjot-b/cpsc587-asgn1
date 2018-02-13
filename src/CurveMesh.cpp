@@ -7,15 +7,16 @@
 
 using namespace std;
 
-CurveMesh::CurveMesh(const char *objFilePath)
-: Mesh(GL_LINE_LOOP)
+CurveMesh::CurveMesh(const char *objFilePath, GLenum primitiveType)
+: Mesh(primitiveType)
 {
     loadFromObjFile(objFilePath);
     createVerticesGrouped();
+    // cout << vertices_.size()/3 << " " << verticesGrouped_.size() << endl;
 }
 
-CurveMesh::CurveMesh(const float* data, unsigned int size) 
-: Mesh(GL_LINE_LOOP, data, size)
+CurveMesh::CurveMesh(const float* data, unsigned int size, GLenum primitiveType) 
+: Mesh(primitiveType, data, size)
 {
     createVerticesGrouped();
 }
@@ -96,6 +97,7 @@ void CurveMesh::smooth(uint iterations)
 
     length_ = calcArcLength(); 
     arcLengthParameterization(length_);
+    createVerticesGrouped();
 }
 
 float CurveMesh::calcArcLength()
@@ -148,6 +150,7 @@ void CurveMesh::arcLengthParameterization(float length)
 
 void CurveMesh::createVerticesGrouped()
 {
+    verticesGrouped_.clear();
     for (uint i = 0; i < vertices_.size(); i += 3)
     {
         glm::vec3 pos;

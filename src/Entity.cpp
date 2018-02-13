@@ -33,7 +33,7 @@ void Entity::draw() const
 
     shader_->setUniform4fv("uColor", color_);
     glDrawArrays(mesh_->getPrimitiveType(), 0, mesh_->verticesCount());
-
+    
     if (drawPoints_)
     {
         shader_->setUniform1f("drawPoints", 1.0f);

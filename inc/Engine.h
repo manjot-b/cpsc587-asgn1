@@ -25,7 +25,11 @@ class Engine
         typedef std::unique_ptr<GLFWwindow, DestroyglfwWin> GLFWwindowPtr;
         GLFWwindowPtr window_;
         bool windowInitialized_;
-        
+        bool firstPerson_;
+        bool spaceKeyHeld_;
+        glm::mat4 viewMatrix_;
+        glm::mat4 projMatrix_;
+
         Scene scene_;
         std::shared_ptr<Entity> track_;
         std::shared_ptr<Entity> cart_;
