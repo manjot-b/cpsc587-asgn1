@@ -22,4 +22,7 @@ class CurveMesh : public Mesh
 
         float calcArcLength();
         void arcLengthParameterization(float length);
+
+    protected:
+        void createVerticesGrouped();
 };

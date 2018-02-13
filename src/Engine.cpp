@@ -68,7 +68,8 @@ void Engine::initScene()
 {
 	// TRACK
 	shared_ptr<Mesh> mesh = make_shared<CurveMesh>("rsc/roller_coaster.obj");
-	static_cast<CurveMesh*>(mesh.get())->smooth(7);
+	CurveMesh* curMesh = static_cast<CurveMesh*>(mesh.get());
+	curMesh->smooth(7);
 
 	shared_ptr<Shader> shader = make_shared<Shader>("rsc/vertex.glsl", "rsc/fragment.glsl");
 	shader->link();
@@ -80,13 +81,36 @@ void Engine::initScene()
 	glm::mat4 model(1.0f);
 	BoundingBox box = track_->getBoundingBox();
 	float scale = 1 / max(box.width, max(box.height, box.depth));
-	// float xTrans = -box.x - (box.width / 2);
-	// float yTrans = -box.y;// - (box.height / 2);
-	// float zTrans = -box.z + (box.depth / 2);
 	track_->setScale(scale);
-	// track_->setTranslation(glm::vec3(xTrans, yTrans, zTrans)); 
-
 	scene_.addEntity(track_);
+
+
+	const vector<glm::vec3>& inRail = curMesh->getVertices();
+	vector<float> outRail;
+	float deltaT = 0.008;
+	for (uint i = 0; i < inRail.size(); i++)
+	{
+		glm::vec3 centAcceleration = calcAcceleration(inRail, i, deltaT);
+		glm::vec3 gravity = glm::vec3(0, -9.81, 0);
+		
+		glm::vec3 normal = centAcceleration - gravity;
+		normal = glm::normalize(normal);
+		
+		glm::vec3 tangent = calcVelocity(inRail, i, deltaT);
+		tangent = glm::normalize(tangent);
+
+		glm::vec3 binormal = glm::cross(tangent, normal);
+		binormal = glm::normalize(binormal);
+
+		glm::vec3 outRailPos = binormal + inRail[i];
+		for (uint j = 0; j < 3; j++)
+			outRail.push_back(outRailPos[j]);	
+	}
+	mesh = make_shared<CurveMesh>(outRail.data(), outRail.size());
+	shared_ptr<Entity> trackOuter = make_shared<Entity>(mesh, shader);
+	trackOuter->setColor(1, 0, 0);
+	trackOuter->setScale(scale);
+	scene_.addEntity(trackOuter);
 
 	// GROUND
 	float groundCoords[] = {
@@ -130,7 +154,7 @@ void Engine::initScene()
 	// yTrans = -box.y - (box.height / 2);
 	// zTrans = -box.z + (box.depth / 2);
 	// model = glm::mat4(1.0f);
-	cart_->setScale(scale * 0.3);
+	cart_->setScale(scale * 0.15);
 	// cart_->setTranslation(glm::vec3(xTrans, yTrans, zTrans));
 	cart_->setPosition( glm::vec3(0, 0, 0) );
 

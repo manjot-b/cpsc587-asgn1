@@ -11,12 +11,13 @@ CurveMesh::CurveMesh(const char *objFilePath)
 : Mesh(GL_LINE_LOOP)
 {
     loadFromObjFile(objFilePath);
+    createVerticesGrouped();
 }
 
 CurveMesh::CurveMesh(const float* data, unsigned int size) 
 : Mesh(GL_LINE_LOOP, data, size)
 {
-
+    createVerticesGrouped();
 }
 
 void CurveMesh::loadFromObjFile(const char *objFilePath)
@@ -142,6 +143,19 @@ void CurveMesh::arcLengthParameterization(float length)
         }
 
         j += 3;     // skip over x,y,z to next point
+    }
+}
+
+void CurveMesh::createVerticesGrouped()
+{
+    for (uint i = 0; i < vertices_.size(); i += 3)
+    {
+        glm::vec3 pos;
+        for (uint j = 0; j < 3; j++)
+        {
+            pos[j] = vertices_[i];
+        }
+        verticesGrouped_.push_back(pos);
     }
 }
 
