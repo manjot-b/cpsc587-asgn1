@@ -148,36 +148,17 @@ void Engine::initScene()
 
 	box = ground_->getBoundingBox();
 	scale = 1 / max(box.width, max(box.height, box.depth));
-	// xTrans = -box.x - (box.width / 2);
-	// yTrans = -box.y;// - (box.height / 2);
-	// zTrans = -box.z + (box.depth / 2);
 	ground_->setScale(scale);
-	// ground_->setTranslation(glm::vec3(xTrans, yTrans, zTrans)); 
-
 	scene_.addEntity(ground_);
 
 	// CART
-	// float cartCoords[] = {
-	// 	0, 0, -0.2f,
-	// 	0, 1, -0.2f,
-	// 	1, 0, -0.2f
-	// };
-	// mesh = make_shared<TriangleMesh>(cartCoords, sizeof(cartCoords) / sizeof(float));
 	mesh = make_shared<TriangleMesh>("rsc/cart.obj");
 	cart_ = make_shared<Entity>(mesh, shader);
 	cart_->setColor(0.4, 0.1, 0.4);
 
 	scale = track_->getScale();
-	// box = cart_->getBoundingBox();
-	// scale = 1 / (2.1f * max(box.width, max(box.height, box.depth)));
-	// xTrans = -box.x - (box.width / 2);
-	// yTrans = -box.y - (box.height / 2);
-	// zTrans = -box.z + (box.depth / 2);
-	// model = glm::mat4(1.0f);
 	cart_->setScale(scale * 0.15);
-	// cart_->setTranslation(glm::vec3(xTrans, yTrans, zTrans));
 	cart_->setPosition( glm::vec3(0, 0, 0) );
-
 	scene_.addEntity(cart_);
 
 
@@ -308,12 +289,15 @@ uint Engine::update(uint time)
 	
 	if (firstPerson_)
 	{
-		glm::mat4 view = glm::lookAt(
-			glm::vec3(newCartWorldPos),				// camera position
-			tangent,						// where camera is lookin
-			normal							// up vector
-        );
-		scene_.addCamera( Camera(view, projMatrix_) );		
+		// if (std::abs(time - freeFallState) > 300)
+		{
+			glm::mat4 view = glm::lookAt(
+				glm::vec3(0.55f, 0.06f, 0.3f),			
+				glm::vec3(0.00f, 0.17f, -0.25),				
+				glm::vec3(0, 1, 0)						
+			);
+			scene_.addCamera( Camera(view, projMatrix_) );		
+		}
 	}
 	else
 	{
