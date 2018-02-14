@@ -3,6 +3,11 @@ Steps for compilation
 2 - Enter "make" in the terminal window to build the project
 3 - Enter "./coaster" to run the program
 
+Press space bar to view from a different angle. 
+(I couldn't get first person view to work. I thought I just
+needed to set the camera/view matrix to the cart's model matrix.
+But it didn't work.)
+
 Explanation of Math/physics
 
 Basically I just followed the roller coaster pdf.
