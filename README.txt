@@ -1,7 +1,9 @@
 Steps for compilation
 1 - Open up a terminal window in the "build" folder
-2 - Enter "make" in the terminal window to build the project
-3 - Enter "./coaster" to run the program
+2 - Ensure that the folder is empty by entering "rm -r *"
+3 - Enter "cmake .." to build the makefiles
+4 - Enter "make" in the terminal window to build the project
+5 - Enter "./coaster" to run the program
 
 Press space bar to view from a different angle. 
 (I couldn't get first person view to work. I thought I just
